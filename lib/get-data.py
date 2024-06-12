@@ -28,5 +28,24 @@ def fetch_lapdata_from_db(**kwargs):
                         changed = True
     return changed
 
+def fetch_pitdata_from_db(**kwargs):
+    ergast = Ergast()
+    changed = False
+    for year in range(2022, date.today().year):
+        response_frame = ergast.get_circuits(season=year)
+        for round, circuit in enumerate(response_frame['circuitId'], start=1):
+            pits = ergast.get_pit_stops(2022, 1, result_type='raw')
+            TARGET_PATH = DATALAKE_ROOT_FOLDER + f"raw/pitData/{year}/{circuit}/"
+            if not os.path.exists(TARGET_PATH):
+                print(f"Downloading {circuit}/ to {TARGET_PATH}")
+                laps = ergast.get_lap_times(season=year, round=round, result_type='raw',
+                                            auto_cast=False)
+                os.makedirs(TARGET_PATH)
+                open(TARGET_PATH + f'{circuit}-{year}-pit-data.json', 'w').write(json.dumps(laps))
+                changed = True
+    return changed
 
-fetch_lapdata_from_db()
+
+
+# fetch_lapdata_from_db()
+fetch_pitdata_from_db()
