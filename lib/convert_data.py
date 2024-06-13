@@ -20,5 +20,3 @@ def convert_data(files):
         else:
             table = pd.read_json(f)
             table.to_parquet(TARGET_PATH + f.split('/')[-1].replace('json', 'parquet'))
-
-print(convert_data(list_files('../datalake/raw/lapData')))
