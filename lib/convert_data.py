@@ -1,4 +1,5 @@
 import os
+import sys
 
 import pandas as pd
 
@@ -16,7 +17,11 @@ def convert_data(files):
             os.makedirs(TARGET_PATH)
         if f.endswith('.csv'):
             table = pd.read_csv(f)
+            driverName = TARGET_PATH.split("/")[-2]
+            table['driverId'] = driverName
             table.to_parquet(TARGET_PATH + f.split('/')[-1].replace('csv', 'parquet'))
         else:
             table = pd.read_json(f)
             table.to_parquet(TARGET_PATH + f.split('/')[-1].replace('json', 'parquet'))
+
+convert_data(list_files('../datalake/raw/lapData'))
