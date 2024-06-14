@@ -25,6 +25,7 @@ def duration_to_seconds(duration):
 
 
 def convert_data(files):
+    fileList = []
     for f in files:
         TARGET_PATH = f.replace(f.split('/')[-1], "").replace('raw', 'formatted')
         if not os.path.exists(TARGET_PATH):
@@ -35,8 +36,11 @@ def convert_data(files):
             table['driverId'] = driverName
             table["lapTimeInSeconds"] = table.apply(lambda row: duration_to_seconds(row['LapTime']), axis=1)
             table.to_parquet(TARGET_PATH + f.split('/')[-1].replace('csv', 'parquet'))
+            fileList.append(TARGET_PATH + f.split('/')[-1].replace('csv', 'parquet'))
         else:
             table = pd.read_json(f)
             table.to_parquet(TARGET_PATH + f.split('/')[-1].replace('json', 'parquet'))
+            fileList.append(TARGET_PATH + f.split('/')[-1].replace('json', 'parquet'))
+    return fileList
 
 # convert_data(list_files('../datalake/raw/lapData'))
