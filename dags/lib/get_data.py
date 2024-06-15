@@ -7,7 +7,7 @@ from fastf1.ergast import Ergast
 import fastf1
 import json
 
-DATALAKE_ROOT_FOLDER = "../datalake/"
+DATALAKE_ROOT_FOLDER = "datalake2/"
 
 
 def fetch_lapdata_from_db(**kwargs):

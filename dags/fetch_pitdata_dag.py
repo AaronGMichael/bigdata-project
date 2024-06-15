@@ -1,21 +1,10 @@
-# fetch_pitdata_dag.py
-
-import os
-import re
-import sys
-
-os.environ['PYSPARK_PYTHON'] = sys.executable
-os.environ['PYSPARK_DRIVER_PYTHON'] = sys.executable
-# os.environ["HADOOP_HOME"] = "E:\\Apps\\hadoop-2.8.3"
-
-cwd = os.getcwd()  # Get the current working directory (cwd)
-cwd = cwd.replace("\\", "/")
-cwd = cwd + "/../datalake/"
-DATALAKE_ROOT_FOLDER = cwd
 from datetime import datetime
 from airflow import DAG
 from airflow.operators.python import PythonOperator
-from ..lib.get_data import fetch_pitdata_from_db
+from airflow.operators.trigger_dagrun import TriggerDagRunOperator
+
+from lib import get_data
+
 
 default_args = {
     'owner': 'airflow',
@@ -24,15 +13,31 @@ default_args = {
     'retries': 1,
 }
 
+def trigger_convert_data_pit(**kwargs):
+    ti = kwargs['ti']
+    data = ti.xcom_pull(task_ids='fetch_pitdata', key='return_value')
+    return {'data': data}
+
+
 with DAG(
     'fetch_pitdata_dag',
     default_args=default_args,
     description='Fetch pit data from DB',
-    schedule_interval='@daily',
+    schedule_interval=None,
     catchup=False,
 ) as dag:
 
     fetch_pitdata = PythonOperator(
         task_id='fetch_pitdata',
-        python_callable=fetch_pitdata_from_db,
+        python_callable=get_data.fetch_pitdata_from_db,
+        provide_context=True,
     )
+
+    trigger_conversion_dag = TriggerDagRunOperator(
+        task_id='trigger_conversion_dag',
+        trigger_dag_id='convert_data_dag',
+        conf={"data": "pitData"},
+        wait_for_completion=False,
+    )
+
+    fetch_pitdata >> trigger_conversion_dag
