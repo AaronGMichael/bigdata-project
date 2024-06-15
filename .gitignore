@@ -3,3 +3,5 @@ logs/
 plugins/
 .venv/
 datalake/
+datalake*/
+airflow-env/

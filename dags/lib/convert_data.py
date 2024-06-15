@@ -4,6 +4,7 @@ import sys
 import pandas as pd
 import re
 
+
 def list_files(dir):
     r = []
     for root, dirs, files in os.walk(dir):
@@ -32,6 +33,30 @@ def convert_data(files):
             os.makedirs(TARGET_PATH)
         if f.endswith('.csv'):
             table = pd.read_csv(f)
+            driverName = TARGET_PATH.split("/")[-2]
+            table['driverId'] = driverName
+            table["lapTimeInSeconds"] = table.apply(lambda row: duration_to_seconds(row['LapTime']), axis=1)
+            table.to_parquet(TARGET_PATH + f.split('/')[-1].replace('csv', 'parquet'))
+            fileList.append(TARGET_PATH + f.split('/')[-1].replace('csv', 'parquet'))
+        else:
+            table = pd.read_json(f)
+            table.to_parquet(TARGET_PATH + f.split('/')[-1].replace('json', 'parquet'))
+            fileList.append(TARGET_PATH + f.split('/')[-1].replace('json', 'parquet'))
+    return fileList
+
+
+def convert_data_from_root(filePath=""):
+    if filePath != "":
+        filePath = "/" + filePath
+    files = list_files('datalake2/raw'+filePath)
+    fileList = []
+    for f in files:
+        TARGET_PATH = f.replace(f.split('/')[-1], "").replace('raw', 'formatted')
+        if not os.path.exists(TARGET_PATH):
+            os.makedirs(TARGET_PATH)
+        if f.endswith('.csv'):
+            table = pd.read_csv(f)
+            print(f)
             driverName = TARGET_PATH.split("/")[-2]
             table['driverId'] = driverName
             table["lapTimeInSeconds"] = table.apply(lambda row: duration_to_seconds(row['LapTime']), axis=1)

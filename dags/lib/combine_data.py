@@ -4,7 +4,7 @@ import sys
 
 from pyspark.sql import SQLContext
 import convert_data
-from pyspark import SparkContext, SparkConf
+from pyspark import SparkContext
 from pyspark.sql.functions import lit
 
 os.environ['PYSPARK_PYTHON'] = sys.executable
@@ -13,7 +13,7 @@ os.environ['PYSPARK_DRIVER_PYTHON'] = sys.executable
 
 cwd = os.getcwd()  # Get the current working directory (cwd)
 cwd = cwd.replace("\\", "/")
-cwd = cwd + "/../datalake/"
+cwd = cwd + "/../datalake2/"
 DATALAKE_ROOT_FOLDER = cwd
 
 
@@ -49,4 +49,4 @@ def combine_data(files):
                   .withColumn("circuit", lit(circuitName)))
         stints.write.save(DATALAKE_ROOT_FOLDER + "usage/" + "stints", mode="append")
 
-combine_data(convert_data.list_files(DATALAKE_ROOT_FOLDER + "formatted/lapData/"))
+# combine_data(convert_data.list_files(DATALAKE_ROOT_FOLDER + "formatted/lapData/"))
