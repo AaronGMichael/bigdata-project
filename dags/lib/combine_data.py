@@ -58,5 +58,5 @@ def combine_data():
                   .withColumn("circuit", lit(circuitName)))
         stints.write.save(DATALAKE_ROOT_FOLDER + "usage/" + "stints", mode="append")
 
-combine_data()
+# combine_data()
 

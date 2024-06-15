@@ -13,11 +13,12 @@ os.environ['PYSPARK_DRIVER_PYTHON'] = sys.executable
 
 cwd = os.getcwd()  # Get the current working directory (cwd)
 cwd = cwd.replace("\\", "/")
-cwd = cwd + "/../datalake/"
+cwd = cwd + "/../datalake2/"
 DATALAKE_ROOT_FOLDER = cwd
+DATALAKE_ROOT_FOLDER = DATALAKE_ROOT_FOLDER + "/usage/stints"
 
 
-def make_elastic_indexes(path):
+def make_elastic_indexes(path=DATALAKE_ROOT_FOLDER):
     spark = SparkSession \
         .builder \
         .appName("Convert To Elastic Indexes") \
@@ -29,10 +30,10 @@ def make_elastic_indexes(path):
     df.registerTempTable("data")
     print(df.show())
     df.write.format("org.elasticsearch.spark.sql") \
-     .option("es.nodes.wan.only", "true") \
-     .option('es.nodes', 'https://dep1-2160db.es.us-central1.gcp.cloud.es.io') \
-     .option('es.port', 9243).option('es.resource', 'stint_data').option("es.net.http.auth.user", "elastic") \
-     .option("es.net.http.auth.pass", "FMAZQHbivP3B4ZxZJhDm6ajL") \
-     .save()
+        .option("es.nodes.wan.only", "true") \
+        .option('es.nodes', 'https://dep1-2160db.es.us-central1.gcp.cloud.es.io') \
+        .option('es.port', 9243).option('es.resource', 'stint_data').option("es.net.http.auth.user", "elastic") \
+        .option("es.net.http.auth.pass", "FMAZQHbivP3B4ZxZJhDm6ajL") \
+        .save()
 
-make_elastic_indexes(DATALAKE_ROOT_FOLDER + "/usage/stints")
+# make_elastic_indexes(DATALAKE_ROOT_FOLDER + "/usage/stints")
