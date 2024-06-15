@@ -4,3 +4,4 @@ plugins/
 .venv/
 datalake/
 datalake*/
+airflow-env/

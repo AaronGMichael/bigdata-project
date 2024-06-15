@@ -1,0 +1,15 @@
+PUT /stint_data
+{
+  "mappings": {
+    "properties": {
+      "avgLapTime": { "type": "float" },
+      "Stint": { "type": "integer" },
+      "driver": { "type": "keyword" },
+      "NoOfLaps": { "type": "integer" },
+      "Compound": { "type": "keyword" },
+      "team": { "type": "keyword" },
+      "year": { "type": "integer" },
+      "circuit": { "type": "keyword" }
+    }
+  }
+}
